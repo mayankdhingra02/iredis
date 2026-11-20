@@ -1,4 +1,5 @@
 name: Reviewed source matrix
+run-name: Reviewed ${{ inputs.reviewed_sha }}
 
 on:
   workflow_dispatch:
