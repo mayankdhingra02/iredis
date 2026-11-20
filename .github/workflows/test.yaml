@@ -1,10 +1,15 @@
-name: Test
+name: Reviewed source matrix
 
 on:
-  pull_request:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      reviewed_sha:
+        description: Exact reviewed source commit to test
+        required: true
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -39,6 +44,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.reviewed_sha }}
+      - name: Verify reviewed source
+        env:
+          OSS_REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+        run: |
+          [[ "$OSS_REVIEWED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$OSS_REVIEWED_SHA"
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
@@ -83,6 +96,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.reviewed_sha }}
+      - name: Verify reviewed source
+        env:
+          OSS_REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+        run: |
+          [[ "$OSS_REVIEWED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$OSS_REVIEWED_SHA"
 
       - uses: actions/setup-python@v7
         with:
